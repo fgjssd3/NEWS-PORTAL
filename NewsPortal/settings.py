@@ -63,10 +63,8 @@ if DEBUG:
     ])
 
 
-# === AJOUTEZ CES 4 LIGNES ===
-SESSION_SAVE_EVERY_REQUEST = True
-CACHE_MIDDLEWARE_SECONDS = 0
-DATABASES['default']['OPTIONS'] = {'timeout': 30, 'check_same_thread': False}    
+
+   
 
 # Important pour les reverse proxies comme Render
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -136,6 +134,10 @@ DATABASES = {
         }
     }
 }
+
+# === AJOUTEZ CES 4 LIGNES ===
+SESSION_SAVE_EVERY_REQUEST = True
+CACHE_MIDDLEWARE_SECONDS = 0
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
