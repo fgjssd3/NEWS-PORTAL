@@ -42,7 +42,7 @@ ALLOWED_HOSTS.extend([
 
   ])
 =======
-])
+
 
 >>>>>>> 63f4244704c3ca8cfd306f13947c07865c746d04
 
@@ -80,7 +80,7 @@ SESSION_COOKIE_SECURE = True
 <<<<<<< HEAD
 CSRF_COOKIE_SECURE = True  
 =======
-CSRF_COOKIE_SECURE = True
+
 >>>>>>> 63f4244704c3ca8cfd306f13947c07865c746d04
  
 
