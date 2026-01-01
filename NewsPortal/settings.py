@@ -119,7 +119,7 @@ DATABASES = {
     }
 }
 '''
-DATABASES['default'] = dj_database_url.config("postgresql://db_x0yq_user:OLkFK55IG6uHQ71odoMaf2D0S2foWjB8@dpg-d5bavb8gjchc73bsvoq0-a/db_x0yq")
+DATABASES['default'] = dj_database_url.config("postgresql://db_x0yq_user:OLkFK55IG6uHQ71odoMaf2D0S2foWjB8@dpg-d5bavb8gjchc73bsvoq0-a.oregon-postgres.render.com/db_x0yq")
 #
 
 
