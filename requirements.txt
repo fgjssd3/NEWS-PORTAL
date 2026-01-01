@@ -1,4 +1,4 @@
-# ===== CORE =====
-Django==4.2.18  # Version LTS stable (recommandée pour production)
-# Django==5.0.4  # Version plus récente avec nouvelles fonctionnalités
-
+Django>=4.2
+psycopg2-binary>=2.9
+python-decouple>=3.8
+dj-database-url>=1.2
