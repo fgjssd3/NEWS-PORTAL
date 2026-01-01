@@ -1,0 +1,192 @@
+{% load static %}
+{% block body %}
+
+{% include 'header.html' %}
+
+<style>
+  :root{
+    --ink:#0f172a;           /* slate-900 */
+    --muted:#64748b;         /* slate-500 */
+    --paper:#ffffff;
+    --primary:#0ea5e9;       /* sky-500 */
+    --primary-2:#0369a1;     /* sky-800 */
+    --accent:#ef4444;        /* red-500 */
+  }
+
+  .news-hero {
+    background: linear-gradient(135deg, var(--primary-2), var(--primary));
+    border-radius: 1rem;
+    color: #fff;
+    padding: 1.25rem 1.25rem;
+    box-shadow: 0 10px 30px rgba(2,132,199,.25);
+  }
+  @media (min-width: 992px){ .news-hero{ padding: 1.75rem 2rem; } }
+
+  .news-card.card{
+    border:0; border-radius:1rem; overflow:hidden;
+    box-shadow:0 8px 24px rgba(15,23,42,.06);
+    transition: transform .15s ease, box-shadow .15s ease;
+    background:var(--paper);
+  }
+  .news-card.card:hover{
+    transform: translateY(-2px);
+    box-shadow:0 12px 34px rgba(15,23,42,.12);
+  }
+
+  .ratio-16x9{ aspect-ratio:16/9; }
+  .obj-cover{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .meta{ font-size:.925rem; color:var(--muted); }
+  .meta i{ margin-right:.35rem; }
+
+  .category-badge{
+    --bdg-bg:#e0f2fe; --bdg-fg:#075985;
+    background:var(--bdg-bg); color:var(--bdg-fg);
+    padding:.25rem .6rem; border-radius:999px;
+    font-weight:600; font-size:.85rem;
+    display:inline-flex; align-items:center; gap:.4rem;
+    text-decoration:none;
+  }
+  .category-badge:hover{ filter:brightness(.95); text-decoration:none; }
+
+  .btn-read{ border-radius:.8rem; font-weight:700; }
+
+  .pagination .page-link{ border:0; color:var(--primary-2); font-weight:600; }
+  .pagination .page-item.active .page-link{
+    background:var(--primary-2); color:#fff;
+    box-shadow:0 6px 16px rgba(2,132,199,.25);
+  }
+  .pagination .page-link:focus{ box-shadow:none; }
+</style>
+
+<main class="container py-4 py-lg-5">
+  <!-- Category hero -->
+  <section class="news-hero mb-4 mb-lg-5">
+    <div class="d-flex align-items-center flex-wrap gap-3">
+      <span class="d-inline-grid place-items-center rounded-3 border border-light-subtle"
+            style="width:40px;height:40px;background:rgba(255,255,255,.18)">
+        <i class="fa-solid fa-folder-open"></i>
+      </span>
+      <div class="flex-grow-1">
+        {% if postcount == 0 %}
+          <h1 class="h3 mb-1">Aucun enregistrement trouvé</h1>
+          <p class="mb-0 text-white-50">Nous n'avons trouvé aucun article dans cette catégorie pour le moment.</p>
+        {% else %}
+          <h1 class="h3 mb-1">{{ category.categoryname }} News</h1>
+          <p class="mb-0 text-white-50">
+            Dernières nouvelles de <strong>{{ category.categoryname }}</strong>
+          </p>
+        {% endif %}
+      </div>
+      {% if postcount and postcount > 0 %}
+      <span class="badge text-bg-light rounded-pill px-3 py-2">
+        <i class="fa-regular fa-newspaper me-1"></i> {{ postcount }} articles
+      </span>
+      {% endif %}
+    </div>
+  </section>
+
+  <div class="row g-4">
+    <!-- Listing -->
+    <div class="col-lg-8">
+      {% if postcount == 0 %}
+        <div class="alert alert-info border-0 shadow-sm" role="alert">
+          <i class="fa-regular fa-face-meh-blank me-1"></i> Aucun article disponible dans cette catégorie.
+        </div>
+      {% else %}
+        {% for i in posts %}
+        <article class="card news-card mb-4">
+          <div class="ratio ratio-16x9">
+            <img loading="lazy" class="obj-cover" src="{{ i.postimage.url }}" alt="{{ i.posttitle }}">
+          </div>
+
+          <div class="card-body">
+            <h2 class="h4 card-title mb-2">{{ i.posttitle }}</h2>
+
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+              <a class="category-badge" href="{% url 'categorynews' i.category.id %}">
+                <i class="fa-solid fa-tags"></i> {{ i.category.categoryname }}
+              </a>
+            </div>
+
+            <div class="meta mb-3">
+              <span class="me-3">
+                <i class="fa-regular fa-calendar"></i> Posté le {{ i.postdate }}
+              </span>
+            </div>
+
+            <a href="{% url 'news_detail' i.id %}" class="btn btn-primary btn-read">
+              Lire plus<i class="fa-solid fa-arrow-right-long ms-1"></i>
+            </a>
+          </div>
+        </article>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Pagination -->
+      {% if posts.has_other_pages %}
+      <nav aria-label="Category pagination" class="mt-4">
+        <ul class="pagination justify-content-center gap-1">
+          {% if posts.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ posts.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+          {% endif %}
+
+          {% for p in posts.paginator.page_range %}
+            {% if posts.number == p %}
+              <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
+            {% elif p > posts.number|add:'-3' and p < posts.number|add:'3' %}
+              <li class="page-item"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+            {% elif p == 1 or p == posts.paginator.num_pages %}
+              <li class="page-item"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+            {% elif forloop.first or forloop.last %}
+              <li class="page-item disabled"><span class="page-link">…</span></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if posts.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ posts.next_page_number }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    {% include 'sidebaruser.html' %}
+  </div>
+</main>
+
+{% include 'footer.html' %}
+
+<!-- SweetAlert toast for Django messages (optional) -->
+{% if messages %}
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    {% for message in messages %}
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: '{{ message.tags|default:"info" }}',
+        title: '{{ message|escapejs }}',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+      });
+    {% endfor %}
+  });
+</script>
+{% endif %}
+
+{% endblock %}

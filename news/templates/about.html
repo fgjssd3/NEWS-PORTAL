@@ -1,0 +1,375 @@
+{% load static %}
+{% block body %}
+
+<!doctype html>
+<html lang="fr">
+<head>
+   <link rel="icon" type="image/png" href="{% static 'images/logo2.png' %}">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <title>DISTINCTION PTF | À Propos</title>
+
+  <!-- Bootstrap 5 + FA6 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --ink:#0f172a; --muted:#64748b; --primary:#0ea5e9; --primary-2:#0369a1;
+      --bg:#f8fafc;
+    }
+    body{ background:var(--bg); color:var(--ink); font-family: 'Segoe UI', system-ui, sans-serif; }
+    .hero-cover {
+      height: 400px;
+      background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7)),
+                  url('https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+    }
+    .hero-content {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 3rem;
+      border: 1px solid rgba(14, 165, 233, 0.1);
+      box-shadow: 0 20px 40px rgba(14, 165, 233, 0.1);
+    }
+    .team-avatar{ 
+      width: 120px; 
+      height: 120px; 
+      border-radius: 50%; 
+      object-fit: cover; 
+      border: 3px solid #e0f2fe;
+      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.15);
+    }
+    .team-card {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      border: 1px solid #e0f2fe;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      height: 100%;
+    }
+    .team-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(14, 165, 233, 0.2);
+    }
+    .company-presentation {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem;
+      margin: 3rem 0;
+      border: 1px solid #e0f2fe;
+      box-shadow: 0 10px 30px rgba(14, 165, 233, 0.08);
+    }
+    .section-title {
+      color: var(--primary-2);
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .section-title:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-2));
+      border-radius: 2px;
+    }
+    .text-center .section-title:after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .highlight-box {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-radius: 15px;
+      padding: 2rem;
+      border: 1px solid #bae6fd;
+      margin: 2rem 0;
+    }
+    .feature-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-2);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .value-card {
+      text-align: center;
+      padding: 2rem 1rem;
+      border-radius: 15px;
+      background: white;
+      border: 1px solid #e0f2fe;
+      transition: all 0.3s ease;
+    }
+    .value-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(14, 165, 233, 0.15);
+    }
+    .stat-badge {
+      background: rgba(14, 165, 233, 0.1);
+      color: var(--primary-2);
+      padding: 0.5rem 1.2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+    /* Responsive pour 5 cartes */
+    @media (max-width: 992px) {
+      .team-card {
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'header.html' %}
+
+  <!-- Image de Couverture -->
+  <section class="hero-cover">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="hero-content text-center" style="margin-top: 150px;">
+            <h1 class="display-4 fw-bold mb-4" style="color: var(--primary-2)">
+              DISTINCTION PTF <span class="text-body">Groupe de Journalisme</span>
+            </h1>
+            <p class="lead text-muted mb-4">
+              Leader de l'avenir du journalisme numérique avec intégrité, innovation et perspicacité
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+              <span class="stat-badge">
+                <i class="fas fa-award me-1"></i> Journalisme Primé
+              </span>
+              <span class="stat-badge">
+                <i class="fas fa-globe me-1"></i> Couverture Mondiale
+              </span>
+              <span class="stat-badge">
+                <i class="fas fa-shield-alt me-1"></i> Sources Fiables
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Présentation de l'Entreprise -->
+  <div class="container py-5">
+    <div class="company-presentation">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h2 class="section-title">À Propos de Notre Groupe de Journalisme</h2>
+          <p class="text-muted mb-4">
+            Fondé avec la mission de révolutionner le journalisme numérique, DISTINCTION PTF Journalism Group se place 
+            à l'avant-garde des médias modernes. Nous combinons les valeurs journalistiques traditionnelles avec 
+            les technologies de pointe pour fournir des informations précises, opportunes et engageantes à des 
+            millions de lecteurs à travers le monde.
+          </p>
+          
+          <div class="highlight-box">
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="feature-icon">
+                  <i class="fas fa-bullseye"></i>
+                </div>
+                <h5>Notre Mission</h5>
+                <p class="text-muted small">Délivrer la vérité avec transparence, donner du pouvoir aux lecteurs par la connaissance et façonner l'avenir du journalisme numérique.</p>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="feature-icon">
+                  <i class="fas fa-eye"></i>
+                </div>
+                <h5>Notre Vision</h5>
+                <p class="text-muted small">Être la plateforme d'information numérique la plus fiable, établissant des standards mondiaux d'excellence journalistique.</p>
+              </div>
+            </div>
+          </div>
+
+          <h4 class="mt-4 mb-3" style="color: var(--primary-2)">Ce Qui Nous Distingue</h4>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-start gap-3">
+                <i class="fas fa-check-circle text-primary mt-1"></i>
+                <div>
+                  <h6 class="mb-1">Intégrité Sans Compromis</h6>
+                  <p class="text-muted small mb-0">Nous adhérons aux plus hauts standards éthiques du journalisme</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-start gap-3">
+                <i class="fas fa-check-circle text-primary mt-1"></i>
+                <div>
+                  <h6 class="mb-1">Innovation Numérique</h6>
+                  <p class="text-muted small mb-0">Exploiter la technologie pour enrichir la narration</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-start gap-3">
+                <i class="fas fa-check-circle text-primary mt-1"></i>
+                <div>
+                  <h6 class="mb-1">Perspective Mondiale</h6>
+                  <p class="text-muted small mb-0">Reportages avec une vision locale et un contexte global</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-start gap-3">
+                <i class="fas fa-check-circle text-primary mt-1"></i>
+                <div>
+                  <h6 class="mb-1">Engagement des Lecteurs</h6>
+                  <p class="text-muted small mb-0">Construire des communautés autour de conversations significatives</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Équipe Fondatrice -->
+    <div class="company-presentation mt-5">
+      <h2 class="section-title text-center">Notre Équipe Fondatrice</h2>
+      <p class="text-center text-muted mb-5">Les visionnaires qui ont pionnié notre révolution du journalisme numérique</p>
+      
+      <div class="row g-4">
+        <!-- Membre 1 -->
+        <div class="col-md-4 col-lg-3">
+          <div class="team-card text-center d-flex flex-column">
+            <img src="{% static 'images/bedi.jpeg' %}" 
+                 alt="Zebo Motanda Bedi" 
+                 class="team-avatar mb-3 mx-auto">
+            <h5 class="mb-1">Zebo Motanda Bedi</h5>
+            <p class="text-primary small mb-2">Veilleur numérique et présentateur des émissions en ligne</p>
+            <p class="text-muted small flex-grow-1">Étudiant en communication sociale</p>
+            <div class="mt-3">
+              <a href="https://www.linkedin.com/in/bedi-zebo-755a3a346?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="text-primary me-2"><i class="fab fa-linkedin"></i></a>
+              <a href="https://x.com/BediZebo21" class="text-primary"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Membre 2 -->
+        <div class="col-md-4 col-lg-3">
+          <div class="team-card text-center d-flex flex-column">
+            <img src="{% static 'images/beni.jpeg' %}" 
+                 alt="Ngoma malukunvanganga ben"                
+                 class="team-avatar mb-3 mx-auto">
+            <h5 class="mb-1">Ngoma Malukunvanganga Ben</h5>
+            <p class="text-primary small mb-2">Reporter digital et présentateur des émissions en ligne</p>
+            <p class="text-muted small flex-grow-1">Spécialiste en communication numérique</p>
+            <div class="mt-3">
+              <a href="https://www.facebook.com/poutine.ngoma.ben" class="text-primary me-2"><i class="fab fa-facebook"></i></a>
+              <a href="https://x.com/Ngomaben333270?t=43t0DKB2UqV-1XUM8_UCVQ&s=08" class="text-primary"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Membre 3 -->
+        <div class="col-md-4 col-lg-3">
+          <div class="team-card text-center d-flex flex-column">
+            <img src="{% static 'images/abel.jpeg' %}" 
+                 alt="Abel Letshu" 
+                 class="team-avatar mb-3 mx-auto">
+            <h5 class="mb-1">Abel Letshu Omokoko</h5>
+            <p class="text-primary small mb-2">Développeur informatique</p>
+            <p class="text-muted small flex-grow-1">Entrepreneur passionné par l'innovation technologique</p>
+            <div class="mt-3">
+              <a href="https://www.linkedin.com/in/abel-letshu-337080343?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" class="text-primary me-2"><i class="fab fa-linkedin"></i></a>
+              <a href="https://x.com/abeletshu5?s=11" class="text-primary"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Membre 4 -->
+        <div class="col-md-4 col-lg-3">
+          <div class="team-card text-center d-flex flex-column">
+            <img src="{% static 'images/exauce.jpeg' %}"  
+                 alt="Yenga Yenga Mbenga Exaucé" 
+                 class="team-avatar mb-3 mx-auto">
+            <h5 class="mb-1">Yenga Yenga Mbenga Exaucé</h5>
+            <p class="text-primary small mb-2">Prise de vue, réalisateur et monteur vidéos en ligne</p>
+            <p class="text-muted small flex-grow-1">Spécialiste en captation, réalisation et montage de contenus vidéo pour diffusion</p>
+            <div class="mt-3">
+              <a href="https://www.facebook.com/share/16aUcbJbBu/?mibextid=wwXIfr" class="text-primary me-2"><i class="fab fa-facebook"></i></a>
+               <a href="https://x.com/yengaj36265?s=11" class="text-primary"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Membre 5 - NOUVELLE CARTE -->
+        <div class="col-md-4 col-lg-3">
+          <div class="team-card text-center d-flex flex-column">
+            <img src="{% static 'images/tegra.jpeg' %}"  
+                 alt="Cinquième Membre" 
+                 class="team-avatar mb-3 mx-auto">
+            <h5 class="mb-1">Whaka kilutu tegra</h5>
+            <p class="text-primary small mb-2">Reporter d'investigation numérique et présentateur des émissions en ligne</p>
+            <p class="text-muted small flex-grow-1">
+Étudiant en communication sociale ULK</p>
+            <div class="mt-3">
+              <a href="#" class="text-primary me-2"><i class="fab fa-linkedin"></i></a>
+              <a href="#" class="text-primary"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nos Valeurs Journalistiques -->
+    <div class="company-presentation mt-5">
+      <h2 class="section-title text-center">Nos Valeurs Journalistiques</h2>
+      <div class="row g-4 mt-4">
+        <div class="col-md-4">
+          <div class="value-card">
+            <div class="feature-icon mx-auto">
+              <i class="fas fa-balance-scale"></i>
+            </div>
+            <h5 class="mt-3 mb-2">Exactitude & Équité</h5>
+            <p class="text-muted small">Chaque article subit une vérification rigoureuse des faits et maintient des perspectives équilibrées</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="value-card">
+            <div class="feature-icon mx-auto">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <h5 class="mt-3 mb-2">Intégrité & Éthique</h5>
+            <p class="text-muted small">Nous respectons les plus hauts standards éthiques dans tous nos reportages</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="value-card">
+            <div class="feature-icon mx-auto">
+              <i class="fas fa-users"></i>
+            </div>
+            <h5 class="mt-3 mb-2">Focus Communautaire</h5>
+            <p class="text-muted small">Nous servons nos lecteurs avec un contenu qui compte pour leurs vies et communautés</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {% include 'footer.html' %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,196 @@
+{% load static %}
+
+<!-- ===== Admin Sidebar (Bootstrap 5) ===== -->
+<style>
+  :root{
+    --sb-bg: #0b1324;          /* dark navy */
+    --sb-bg-2: #0f1a33;
+    --sb-ink: #cfe8ff;         /* light text */
+    --sb-ink-dim: #9cc3e6;
+    --sb-accent: #0ea5e9;      /* sky-500 */
+  }
+
+  /* Layout widths */
+  .admin-sidebar{
+    position: fixed; inset: 56px auto 0 0;   /* top will be your header height; adjust if needed */
+    width: 260px; background: linear-gradient(180deg, var(--sb-bg), var(--sb-bg-2));
+    color: var(--sb-ink); z-index: 1020;
+    display:flex; flex-direction:column;
+    transition: width .2s ease;
+    box-shadow: 2px 0 18px rgba(0,0,0,.25);
+  }
+  body.sidebar-collapsed .admin-sidebar{ width: 76px; }
+
+  /* Make room for sidebar */
+  .with-sidebar{ margin-left: 260px; transition: margin-left .2s ease; }
+  body.sidebar-collapsed .with-sidebar{ margin-left: 76px; }
+
+  /* Scroll area */
+  .admin-sidebar .sidebar-scroll{ overflow-y: auto; overflow-x: hidden; }
+  .admin-sidebar .sidebar-scroll::-webkit-scrollbar{ width: 8px; }
+  .admin-sidebar .sidebar-scroll::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.08); border-radius: 6px; }
+
+  /* Brand / user */
+  .sb-brand{
+    display:flex; align-items:center; gap:.6rem; padding: .9rem .9rem 0 .9rem;
+  }
+  .sb-brand .chip{
+    width:36px; height:36px; border-radius:10px; display:grid; place-items:center;
+    background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:#fff;
+  }
+  .sb-title{ font-weight:800; letter-spacing:.2px; color:#fff; line-height:1; }
+  .sb-title .muted{ color:var(--sb-ink); opacity:.9; }
+
+  .sb-user{ padding: .9rem; text-align:center; }
+  .sb-user img{ width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,.2); }
+  .sb-user .name{ margin-top:.5rem; font-weight:700; }
+  .sb-user .actions a{ color: var(--sb-ink-dim); text-decoration:none; }
+  .sb-user .actions a:hover{ color:#fff; }
+
+  /* Nav */
+  .sb-nav .nav-link{
+    color: var(--sb-ink); border-radius:.6rem; padding:.6rem .8rem;
+    display:flex; align-items:center; gap:.7rem; font-weight:600;
+  }
+  .sb-nav .nav-link .fa{ width:22px; text-align:center; opacity:.9; }
+  .sb-nav .nav-link:hover{ background: rgba(255,255,255,.06); color:#fff; }
+
+  .sb-nav .nav-link.active{
+    background: rgba(14,165,233,.18);
+    color:#fff; box-shadow: inset 0 0 0 1px rgba(14,165,233,.5);
+  }
+
+  /* Collapse (submenu) */
+  .sb-sub .nav-link{ padding-left: 2.2rem; font-weight:600; opacity:.95; }
+  .sb-sub .nav-link:hover{ background: rgba(255,255,255,.06); }
+
+  /* Collapsed (icon-only) behavior */
+  body.sidebar-collapsed .admin-sidebar .hide-when-collapsed{ display:none !important; }
+  body.sidebar-collapsed .admin-sidebar .sb-sub{ display:none !important; }
+  body.sidebar-collapsed .admin-sidebar .sb-nav .nav-link{ justify-content:center; padding:.6rem 0; }
+</style>
+
+<nav id="sidebar" class="admin-sidebar">
+  <div class="sidebar-scroll">
+    <!-- Brand -->
+    <div class="sb-brand">
+      <span class="chip"><i class="fa-solid fa-newspaper"></i></span>
+      <div class="hide-when-collapsed">
+        <a href="{% url 'admin_home' %}" class="text-decoration-none">
+          <div class="sb-title">News<span class="muted">Portal</span></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- User -->
+    <div class="sb-user">
+      <img src="{% static 'adminassets/img/avatars/avatarboy729.png' %}" alt="avatar">
+      <div class="name hide-when-collapsed text-capitalize">{{ request.user.username }}</div>
+      <div class="actions hide-when-collapsed">
+        <a href="{% url 'logout' %}" class="me-2" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></a>
+        <a href="{% url 'changepassword' %}" title="Settings"><i class="fa-solid fa-gear"></i></a>
+      </div>
+    </div>
+
+  {# ---- Nav (safe conditions) ---- #}
+<div class="px-2 sb-nav">
+  {# Dashboard #}
+  <a href="{% url 'admin_home' %}"
+     class="nav-link {% if request.resolver_match.url_name == 'admin_home' %}active{% endif %}">
+    <i class="fa-solid fa-gauge"></i>
+    <span class="hide-when-collapsed">Dashboard</span>
+  </a>
+
+  {# Get current route name once #}
+  {% with rn=request.resolver_match.url_name %}
+
+  {# --- News Category --- #}
+  <a class="nav-link d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#categoryMenu" role="button"
+     aria-expanded="{% if rn == 'add_category' or rn == 'view_category' %}true{% else %}false{% endif %}"
+     aria-controls="categoryMenu">
+    <span class="d-flex align-items-center gap-3">
+      <i class="fa-solid fa-folder-tree"></i>
+      <span class="hide-when-collapsed">News Category</span>
+    </span>
+    <i class="fa-solid fa-chevron-down hide-when-collapsed small"></i>
+  </a>
+  <div class="collapse {% if rn == 'add_category' or rn == 'view_category' %}show{% endif %} sb-sub ps-1" id="categoryMenu">
+    <a href="{% url 'add_category' %}" class="nav-link {% if rn == 'add_category' %}active{% endif %}">
+      <i class="fa-regular fa-circle"></i> <span class="hide-when-collapsed">Add Category</span>
+    </a>
+    <a href="{% url 'view_category' %}" class="nav-link {% if rn == 'view_category' %}active{% endif %}">
+      <i class="fa-regular fa-circle"></i> <span class="hide-when-collapsed">Manage Category</span>
+    </a>
+  </div>
+
+  {# --- Post --- #}
+  <a class="nav-link d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#postMenu" role="button"
+     aria-expanded="{% if rn == 'add_post' or rn == 'view_post' %}true{% else %}false{% endif %}"
+     aria-controls="postMenu">
+    <span class="d-flex align-items-center gap-3">
+      <i class="fa-solid fa-bolt"></i>
+      <span class="hide-when-collapsed">Post</span>
+    </span>
+    <i class="fa-solid fa-chevron-down hide-when-collapsed small"></i>
+  </a>
+  <div class="collapse {% if rn == 'add_post' or rn == 'view_post' %}show{% endif %} sb-sub ps-1" id="postMenu">
+    <a href="{% url 'add_post' %}" class="nav-link {% if rn == 'add_post' %}active{% endif %}">
+      <i class="fa-regular fa-circle"></i> <span class="hide-when-collapsed">Add Post</span>
+    </a>
+    <a href="{% url 'view_post' %}" class="nav-link {% if rn == 'view_post' %}active{% endif %}">
+      <i class="fa-regular fa-circle"></i> <span class="hide-when-collapsed">Manage Post</span>
+    </a>
+  </div>
+
+  {# --- Comments --- #}
+  <a class="nav-link d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#commentMenu" role="button"
+     aria-expanded="{% if rn == 'unapproved_comment' or rn == 'approved_comment' %}true{% else %}false{% endif %}"
+     aria-controls="commentMenu">
+    <span class="d-flex align-items-center gap-3">
+      <i class="fa-regular fa-comments"></i>
+      <span class="hide-when-collapsed">Comments</span>
+    </span>
+    <i class="fa-solid fa-chevron-down hide-when-collapsed small"></i>
+  </a>
+  <div class="collapse {% if rn == 'unapproved_comment' or rn == 'approved_comment' %}show{% endif %} sb-sub ps-1" id="commentMenu">
+    <a href="{% url 'unapproved_comment' %}" class="nav-link {% if rn == 'unapproved_comment' %}active{% endif %}">
+      <i class="fa-regular fa-circle"></i> <span class="hide-when-collapsed">Waiting For Approval</span>
+    </a>
+    <a href="{% url 'approved_comment' %}" class="nav-link {% if rn == 'approved_comment' %}active{% endif %}">
+      <i class="fa-regular fa-circle"></i> <span class="hide-when-collapsed">Approved Comments</span>
+    </a>
+  </div>
+
+  {# --- Contact Us Queries --- #}
+  <a class="nav-link d-flex justify-content-between align-items-center"
+     data-bs-toggle="collapse" href="#queryMenu" role="button"
+     aria-expanded="{% if rn == 'unread_queries' or rn == 'read_queries' %}true{% else %}false{% endif %}"
+     aria-controls="queryMenu">
+    <span class="d-flex align-items-center gap-3">
+      <i class="fa-regular fa-envelope"></i>
+      <span class="hide-when-collapsed">Contact Us Queries</span>
+    </span>
+    <i class="fa-solid fa-chevron-down hide-when-collapsed small"></i>
+  </a>
+  <div class="collapse {% if rn == 'unread_queries' or rn == 'read_queries' %}show{% endif %} sb-sub ps-1" id="queryMenu">
+    <a href="{% url 'unread_queries' %}" class="nav-link {% if rn == 'unread_queries' %}active{% endif %}">
+      <i class="fa-regular fa-circle"></i> <span class="hide-when-collapsed">Unread Queries</span>
+    </a>
+    <a href="{% url 'read_queries' %}" class="nav-link {% if rn == 'read_queries' %}active{% endif %}">
+      <i class="fa-regular fa-circle"></i> <span class="hide-when-collapsed">Read Queries</span>
+    </a>
+  </div>
+
+  {% endwith %}
+</div>
+  </div>
+</nav>
+
+<!-- OPTIONAL: If your main content wrapper needs the left margin -->
+<script>
+  // Ensure main content gets margin; add 'with-sidebar' class to your main wrapper once.
+  // Example: <main id="main" class="with-sidebar">...</main>
+</script>

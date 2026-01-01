@@ -1,0 +1,110 @@
+{% load static %}
+
+<!-- === Admin Top Header (Bootstrap 5) === -->
+<style>
+  :root{
+    --ink:#0f172a;          /* slate-900 */
+    --muted:#64748b;        /* slate-500 */
+    --primary:#0ea5e9;      /* sky-500 */
+    --primary-2:#0369a1;    /* sky-800 */
+  }
+
+  .admin-topbar{
+    position: sticky; top:0; z-index:1030;
+    background: linear-gradient(90deg, var(--primary-2), var(--primary));
+    box-shadow: 0 8px 24px rgba(2,132,199,.25);
+  }
+  .admin-topbar .brand{
+    color:#fff !important; font-weight:800; letter-spacing:.2px;
+    display:flex; align-items:center; gap:.5rem;
+  }
+  .admin-topbar .btn-icon{
+    border:0; border-radius: 50%;
+    width:38px; height:38px; display:inline-grid; place-items:center;
+    color:#e6f6ff; background:rgba(255,255,255,.12);
+    transition: transform .15s ease, background .15s ease;
+  }
+  .admin-topbar .btn-icon:hover{ background:rgba(255,255,255,.2); transform: translateY(-1px); }
+  .admin-topbar .nav-link, .admin-topbar .dropdown-toggle{
+    color:#e6f6ff !important; font-weight:600;
+  }
+  .admin-topbar .dropdown-menu{
+    border:0; box-shadow: 0 16px 40px rgba(15,23,42,.14); border-radius: .75rem;
+  }
+
+  /* Small loader bar that can be shown on demand */
+  .header-loader{
+    position:absolute; left:0; right:0; bottom:-2px; height:3px;
+    background: linear-gradient(90deg, #fff, #e0f2fe);
+    opacity:0; transform: scaleX(0); transform-origin:left;
+    transition: transform .3s ease, opacity .3s ease;
+  }
+  .header-loader.active{ opacity:1; transform: scaleX(1); }
+</style>
+
+<header id="page-header" class="admin-topbar">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-3">
+
+      <!-- Left: Sidebar toggle + Brand -->
+      <div class="d-flex align-items-center gap-2">
+        <!-- Sidebar Toggle -->
+        <button type="button" class="btn-icon" id="sidebarToggleBtn" aria-label="Toggle sidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- Brand / Title -->
+        <a href="{% url 'admin_home' %}" class="brand text-decoration-none">
+          <span class="d-inline-grid place-items-center rounded-3 border border-light-subtle"
+                style="width:34px;height:34px;background:rgba(255,255,255,.18)">
+            <i class="fa-solid fa-newspaper"></i>
+          </span>
+          <span>DISTINCTION PTF  • Admin</span>
+        </a>
+      </div>
+
+      <!-- Right: User dropdown -->
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-capitalize d-flex align-items-center gap-2"
+             href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-regular fa-user"></i>
+            {{ request.user.username }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'changepassword' %}">
+                <i class="fa-solid fa-gear"></i> Settings
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'logout' %}">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- Optional loader bar (toggle via JS) -->
+      <div class="header-loader" id="headerLoader"></div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  // Sidebar toggle: toggle a class on body to collapse/expand your sidebar
+  // Make sure your sidebar CSS reacts to `.sidebar-collapsed` on body/html
+  document.getElementById('sidebarToggleBtn')?.addEventListener('click', function(){
+    document.body.classList.toggle('sidebar-collapsed');
+  });
+
+  // Header loader helpers (use when doing async actions)
+  window.showHeaderLoader = function(){
+    document.getElementById('headerLoader')?.classList.add('active');
+  };
+  window.hideHeaderLoader = function(){
+    document.getElementById('headerLoader')?.classList.remove('active');
+  };
+</script>

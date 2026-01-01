@@ -1,0 +1,58 @@
+ {% load static %}
+  <div class="col-md-4">
+
+          <!-- Search Widget -->
+          <div class="card mb-4">
+            <h5 class="card-header">Recherche</h5>
+            <div class="card-body">
+                   <form name="search" action="{% url 'search'%}">
+              <div class="input-group">
+
+        <input type="text" name="q" class="form-control" placeholder="Rechercher..." required>
+                <span class="input-group-btn">
+                  <button class="btn btn-secondary" type="submit">Aller!</button>
+                </span>
+              </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categories Widget -->
+          <div class="card my-4">
+            <h5 class="card-header">Categories</h5>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <ul class="list-unstyled mb-0">
+{% for i in category1 %}
+
+                    <li>
+                      <a href="{% url 'categorynews' i.id %}">{{i.categoryname}}</a>
+                    </li>
+{% endfor %}
+                  </ul>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Side Widget -->
+          <div class="card my-4">
+            <h5 class="card-header">Informations Recentes</h5>
+            <div class="card-body">
+                      <ul class="mb-0">
+{% for i in last_records %}
+
+  <li>
+      <a href="{% url 'news_detail' i.id %}">{{i.posttitle}}</a>
+  </li>{% endfor %}
+          </ul>
+            </div>
+          </div>
+
+        </div>
+
+  {% block body %}
+
+{% endblock %}

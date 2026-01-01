@@ -1,0 +1,410 @@
+{% load static %}
+{% block body %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <title>DISTINCTION PTF – Admin Dashboard</title>
+ <link rel="icon" type="image/png" href="{% static 'images/logo2.png' %}">
+  <!-- Bootstrap 5 + FA6 + SweetAlert2 (if not already in base layout) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+  <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root{
+      --ink:#0f172a;         /* slate-900 */
+      --muted:#64748b;       /* slate-500 */
+      --primary:#0ea5e9;     /* sky-500 */
+      --primary-2:#0369a1;   /* sky-800 */
+      --ok:#22c55e;          /* green-500 */
+      --warn:#f59e0b;        /* amber-500 */
+      --danger:#ef4444;      /* red-500 */
+      --violet:#7c3aed;      /* violet-600 */
+    }
+    body{ background:#f8fafc; color:var(--ink); }
+
+    /* make room for sidebar (we set this class on main wrapper) */
+    .with-sidebar{ margin-left:260px; transition:margin-left .2s ease; }
+    body.sidebar-collapsed .with-sidebar{ margin-left:76px; }
+
+    /* metric cards */
+    .metric{
+      border:0; border-radius:1rem;
+      overflow:hidden; color:#fff;
+      box-shadow:0 10px 28px rgba(15,23,42,.14);
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+    .metric:hover{ transform: translateY(-2px); box-shadow:0 16px 42px rgba(15,23,42,.2); }
+    .metric .icon{
+      width:52px; height:52px; border-radius:12px;
+      display:grid; place-items:center; background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.28);
+      font-size:22px;
+    }
+    .metric .value{
+      font-size:2rem; line-height:1; font-weight:800;
+    }
+    .metric .label{
+      margin:0; opacity:.9; font-weight:600;
+    }
+
+    .grad-blue  { background: linear-gradient(135deg, var(--primary-2), var(--primary)); }
+    .grad-green { background: linear-gradient(135deg, #15803d, var(--ok)); }
+    .grad-amber { background: linear-gradient(135deg, #b45309, var(--warn)); }
+    .grad-red   { background: linear-gradient(135deg, #b91c1c, var(--danger)); }
+    .grad-violet{ background: linear-gradient(135deg, #4c1d95, var(--violet)); }
+
+    .section-title{
+      font-weight:800; letter-spacing:.2px; color:var(--primary-2);
+    }
+
+    /***** extra dashboard widgets *****/
+.section-subtitle{ color:var(--muted); font-weight:600; }
+.quick-action .btn{ border-radius:.9rem; font-weight:700; }
+.card-soft{
+  border:0; border-radius:1rem; background:#fff;
+  box-shadow:0 10px 28px rgba(15,23,42,.08);
+}
+.table-modern thead th{
+  font-weight:800; letter-spacing:.2px; color:var(--primary-2);
+  border-bottom:2px solid #e2e8f0;
+}
+.table-modern tbody td{ vertical-align: middle; }
+.badge-soft{
+  font-weight:700; border-radius:999px; padding:.35rem .6rem;
+}
+.list-activity .icon{
+  width:38px; height:38px; border-radius:10px; display:grid; place-items:center;
+  background:#eff6ff; color:var(--primary-2);
+}
+.canvas-wrap{
+  border-radius:1rem; background:#fff; padding:1rem;
+  box-shadow:0 10px 28px rgba(15,23,42,.08);
+}
+
+/* put this in your <style> (or update the old canvas-wrap rules) */
+.chart-box{
+  height: 320px;                 /* FIXED height */
+  border-radius: 1rem;
+  background: #fff;
+  padding: 1rem;
+  box-shadow: 0 10px 28px rgba(15,23,42,.08);
+  overflow: hidden;              /* just in case */
+}
+.chart-box canvas{
+  display: block;
+  width: 100% !important;
+  height: 100% !important;       /* fills the fixed 320px box */
+}
+
+
+  </style>
+</head>
+<body>
+
+  {# Sidebar + Topbar (your new versions) #}
+  {% include 'sidebar.html' %}
+  {% include 'admin_nav.html' %}
+
+  <!-- Main Container -->
+  <main id="main-container" class="with-sidebar">
+    <div class="container-fluid py-4 py-lg-5">
+
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <h1 class="h4 section-title mb-0">
+          <i class="fa-solid fa-gauge-high me-2"></i> Dashboard
+        </h1>
+        <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+          <i class="fa-solid fa-globe me-1"></i> View Site
+        </a>
+      </div>
+
+      <!-- Row #1: Queries & Comments -->
+      <div class="row g-4 mb-2">
+        <div class="col-6 col-md-4 col-xl-3">
+          <a href="{% url 'unread_queries' %}" class="text-decoration-none">
+            <div class="card metric grad-amber">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="icon"><i class="fa-solid fa-inbox"></i></div>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="value">{{ totalpcontact }}</div>
+                <p class="label">Total Unread Queries</p>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-3">
+          <a href="{% url 'read_queries' %}" class="text-decoration-none">
+            <div class="card metric grad-blue">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="icon"><i class="fa-solid fa-paper-plane"></i></div>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="value">{{ totalacontact }}</div>
+                <p class="label">Total Read Queries</p>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-3">
+          <a href="{% url 'unapproved_comment' %}" class="text-decoration-none">
+            <div class="card metric grad-violet">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="icon"><i class="fa-regular fa-comments"></i></div>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="value">{{ totalpcomment }}</div>
+                <p class="label">Total New Comments</p>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-xl-3">
+          <a href="{% url 'approved_comment' %}" class="text-decoration-none">
+            <div class="card metric grad-green">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="icon"><i class="fa-solid fa-check-double"></i></div>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="value">{{ totalacomment }}</div>
+                <p class="label">Total Approved Comments</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Row #2: Category & Posts -->
+      <div class="row g-4">
+        <div class="col-12 col-md-6">
+          <a href="{% url 'view_category' %}" class="text-decoration-none">
+            <div class="card metric grad-blue">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="icon"><i class="fa-solid fa-folder-tree"></i></div>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="value">{{ totalcategory }}</div>
+                <p class="label">Total Category</p>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <a href="{% url 'view_post' %}" class="text-decoration-none">
+            <div class="card metric grad-red">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="icon"><i class="fa-regular fa-newspaper"></i></div>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="value">{{ totalnews }}</div>
+                <p class="label">Total News Post</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+
+            <!-- Quick Actions -->
+      <div class="mt-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+          <h2 class="h5 mb-0 section-title"><i class="fa-solid fa-bolt me-2"></i> Quick Actions</h2>
+          <span class="section-subtitle">Most used shortcuts</span>
+        </div>
+        <div class="row g-3 quick-action">
+          <div class="col-6 col-md-3">
+            <a href="{% url 'add_post' %}" class="btn btn-primary w-100">
+              <i class="fa-solid fa-plus me-1"></i> New Post
+            </a>
+          </div>
+          <div class="col-6 col-md-3">
+            <a href="{% url 'add_category' %}" class="btn btn-outline-primary w-100">
+              <i class="fa-solid fa-folder-plus me-1"></i> New Category
+            </a>
+          </div>
+          <div class="col-6 col-md-3">
+            <a href="{% url 'unapproved_comment' %}" class="btn btn-outline-secondary w-100">
+              <i class="fa-regular fa-comments me-1"></i> Review Comments
+            </a>
+          </div>
+          <div class="col-6 col-md-3">
+            <a href="{% url 'unread_queries' %}" class="btn btn-outline-secondary w-100">
+              <i class="fa-regular fa-envelope me-1"></i> Check Queries
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insights & Activity -->
+      <div class="row g-4 mt-1">
+        <!-- Insights chart -->
+       <div class="col-lg-6">
+  <div class="chart-box">  {# 👈 no h-100 here #}
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <h2 class="h6 mb-0 section-title"><i class="fa-solid fa-chart-column me-2"></i> Insights</h2>
+      <span class="section-subtitle">Overview</span>
+    </div>
+    <canvas id="npOverviewChart"></canvas>
+    <div class="small text-muted mt-2">
+      Shows current totals: Posts, Categories, Approved/Unread items.
+    </div>
+  </div>
+</div>
+
+
+        <!-- Recent activity -->
+        <div class="col-lg-6">
+          <div class="card card-soft h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h2 class="h6 mb-0 section-title"><i class="fa-regular fa-clock me-2"></i> Recent Activity</h2>
+                <span class="section-subtitle">Latest actions</span>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-modern align-middle">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th class="text-center">Type</th>
+                      <th class="text-end">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {# If you later pass recent context, render it here. For now, show quick summaries using totals. #}
+                    <tr>
+                      <td>
+                        <i class="fa-regular fa-newspaper me-1"></i>
+                        Total News Posts
+                      </td>
+                      <td class="text-center"><span class="badge bg-light text-dark">Post</span></td>
+                      <td class="text-end"><span class="badge badge-soft bg-danger-subtle text-danger">{{ totalnews }}</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i class="fa-solid fa-folder-tree me-1"></i>
+                        Total Categories
+                      </td>
+                      <td class="text-center"><span class="badge bg-light text-dark">Category</span></td>
+                      <td class="text-end"><span class="badge badge-soft bg-primary-subtle text-primary">{{ totalcategory }}</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i class="fa-regular fa-envelope me-1"></i>
+                        Unread Queries
+                      </td>
+                      <td class="text-center"><span class="badge bg-light text-dark">Query</span></td>
+                      <td class="text-end"><span class="badge badge-soft bg-warning-subtle text-warning">{{ totalpcontact }}</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i class="fa-regular fa-comments me-1"></i>
+                        New Comments
+                      </td>
+                      <td class="text-center"><span class="badge bg-light text-dark">Comment</span></td>
+                      <td class="text-end"><span class="badge badge-soft bg-danger text-white">{{ totalpcomment }}</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <i class="fa-solid fa-check-double me-1"></i>
+                        Approved Comments
+                      </td>
+                      <td class="text-center"><span class="badge bg-light text-dark">Comment</span></td>
+                      <td class="text-end"><span class="badge badge-soft bg-success-subtle text-success">{{ totalacomment }}</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="list-activity mt-3">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                  <div class="icon"><i class="fa-solid fa-bolt"></i></div>
+                  <div>
+                    <div class="fw-bold">Tip</div>
+                    <div class="text-muted small">Use the Quick Actions above to speed up routine tasks.</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="icon"><i class="fa-solid fa-shield-halved"></i></div>
+                  <div>
+                    <div class="fw-bold">Reminder</div>
+                    <div class="text-muted small">Review unapproved comments regularly to keep discussions healthy.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    {# Optional footer include #}
+    {% include 'adminfooter.html' %}
+  </main>
+
+  <!-- Bootstrap JS (no old codebase/js/jquery) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const el = document.getElementById('npOverviewChart');
+  if (!el) return;
+
+  // destroy previous instance if any
+  if (window.__npChart && typeof window.__npChart.destroy === 'function') {
+    window.__npChart.destroy();
+  }
+
+  const data = {
+    labels: ['Posts','Categories','Approved','New Cmts','Unread Q','Read Q'],
+    datasets: [{
+      label: 'Totals',
+      data: [
+        {{ totalnews|default:0 }},
+        {{ totalcategory|default:0 }},
+        {{ totalacomment|default:0 }},
+        {{ totalpcomment|default:0 }},
+        {{ totalpcontact|default:0 }},
+        {{ totalacontact|default:0 }},
+      ],
+      borderWidth: 2
+    }]
+  };
+
+  window.__npChart = new Chart(el, {
+    type: 'bar',
+    data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false, // obey .chart-box height (320px)
+      animation: { duration: 600 },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+});
+</script>
+
+  
+</body>
+</html>
+
+{% endblock %}
