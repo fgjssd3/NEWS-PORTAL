@@ -35,7 +35,32 @@ ALLOWED_HOSTS.extend([
         'distinction-ptf.com',  # Votre domaine personnalisé (si vous en avez)
         'www.distinction-ptf.com',
 ])
- 
+
+
+# settings.py
+
+# CSRF settings pour Render
+CSRF_TRUSTED_ORIGINS = [
+    'https://news-portal-3-84ng.onrender.com',
+    'https://*.onrender.com',
+    # Si vous avez un domaine personnalisé :
+    # 'https://votredomaine.com',
+    # 'https://www.votredomaine.com',
+]
+
+# Pour le développement local
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS.extend([
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'http://0.0.0.0:8000',
+    ])
+
+# Important pour les reverse proxies comme Render
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
  
 
 # Application definition
