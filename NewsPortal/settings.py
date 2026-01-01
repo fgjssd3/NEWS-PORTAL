@@ -25,33 +25,21 @@ SECRET_KEY = '6f-+sl-=gb^)y2b6x^r^bxoi%tdmif^h*pe52_+9w9gvgrq@2y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.65','192.168.1.90']
-# Ou pour accepter toutes les adresses (développement uniquement) :
-
-
-
-ALLOWED_HOSTS.extend([
-        'news-portal-2-n8q7.onrender.com',
-        '.onrender.com',  # Tous les sous-domaines Render
-        'distinction-ptf.com',  # Votre domaine personnalisé (si vous en avez)
-        'www.distinction-ptf.com',
-
-
-  ])
-
-
-
-
-
-# settings.py
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1', 
+    '192.168.1.65',
+    '192.168.1.90',
+    'distinctionptf-flxe.onrender.com',
+    '.onrender.com',
+    'distinction-ptf.com',
+    'www.distinction-ptf.com',
+]
 
 # CSRF settings pour Render
 CSRF_TRUSTED_ORIGINS = [
-    'https://news-portal-3-84ng.onrender.com',
+    'https://distinctionptf-flxe.onrender.com',
     'https://*.onrender.com',
-    # Si vous avez un domaine personnalisé :
-    # 'https://votredomaine.com',
-    # 'https://www.votredomaine.com',
 ]
 
 # Pour le développement local
@@ -62,17 +50,11 @@ if DEBUG:
         'http://0.0.0.0:8000',
     ])
 
-
-
-   
-
 # Important pour les reverse proxies comme Render
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
-
-CSRF_COOKIE_SECURE = True  
-
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 
@@ -120,14 +102,10 @@ WSGI_APPLICATION = 'NewsPortal.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-
-# Dans settings.py, MODIFIEZ votre configuration DATABASES existante :
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Gardez votre chemin actuel
-        # AJOUTEZ cette ligne 'OPTIONS' :
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),  # CORRECTION ICI
         'OPTIONS': {
             'timeout': 30,
             'check_same_thread': False,
@@ -135,7 +113,7 @@ DATABASES = {
     }
 }
 
-# === AJOUTEZ CES 4 LIGNES ===
+# Synchronisation
 SESSION_SAVE_EVERY_REQUEST = True
 CACHE_MIDDLEWARE_SECONDS = 0
 
@@ -176,5 +154,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-MEDIA_URL='/media/'
-MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
