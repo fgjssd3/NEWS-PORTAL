@@ -28,6 +28,14 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.65','192.168.1.90']
 # Ou pour accepter toutes les adresses (développement uniquement) :
 
+ # En production sur Render
+ALLOWED_HOSTS.extend([
+        'news-portal-2-n8q7.onrender.com',
+        '.onrender.com',  # Tous les sous-domaines Render
+        'distinction-ptf.com',  # Votre domaine personnalisé (si vous en avez)
+        'www.distinction-ptf.com',
+])
+ 
  
 
 # Application definition
