@@ -26,22 +26,29 @@ SECRET_KEY = '6f-+sl-=gb^)y2b6x^r^bxoi%tdmif^h*pe52_+9w9gvgrq@2y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.65', '192.168.1.90']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.65','192.168.1.90']
+# Ou pour accepter toutes les adresses (développement uniquement) :
 
-# Ajout des hosts pour Render
+
 ALLOWED_HOSTS.extend([
-    'news-portal-2-n8q7.onrender.com',
-    'news-portal-3-84ng.onrender.com',
-    '.onrender.com',  # Tous les sous-domaines Render
-    'distinction-ptf.com',
-    'www.distinction-ptf.com',
-])
+        'news-portal-2-n8q7.onrender.com',
+        '.onrender.com',  # Tous les sous-domaines Render
+        'distinction-ptf.com',  # Votre domaine personnalisé (si vous en avez)
+        'www.distinction-ptf.com',
+
+
+  ])
+
+
+# settings.py
 
 # CSRF settings pour Render
 CSRF_TRUSTED_ORIGINS = [
-    'https://news-portal-2-n8q7.onrender.com',
     'https://news-portal-3-84ng.onrender.com',
     'https://*.onrender.com',
+    # Si vous avez un domaine personnalisé :
+    # 'https://votredomaine.com',
+    # 'https://www.votredomaine.com',
 ]
 
 # Pour le développement local
@@ -52,12 +59,11 @@ if DEBUG:
         'http://0.0.0.0:8000',
     ])
 
+
 # Important pour les reverse proxies comme Render
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# Désactive SSL redirect en développement, active en production
-SECURE_SSL_REDIRECT = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
 
 
 # Application definition
@@ -74,7 +80,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Pour servir les fichiers statiques sur Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -88,7 +93,7 @@ ROOT_URLCONF = 'NewsPortal.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Ajouté si tu as un dossier templates global
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,7 +101,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media',  # Ajouté pour les médias
             ],
         },
     },
@@ -107,35 +111,29 @@ WSGI_APPLICATION = 'NewsPortal.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-# Configuration de base (SQLite pour développement)
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+DATABASES['default'] = dj_database_url.config("")
+'''
 
-# Configuration pour Render PostgreSQL
-# Cette configuration surcharge celle par défaut si DATABASE_URL est définie
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
-    # Utilise la base de données Render
-    DATABASES['default'] = dj_database_url.config(
-        default=DATABASE_URL,
-        conn_max_age=600,
-        ssl_require=True
-    )
-else:
-    # Pour le développement, tu peux forcer l'URL Render ici
-    # (ou laisser SQLite et utiliser .env pour la variable DATABASE_URL)
-    RENDER_DB_URL = 'postgresql://db_x0yq_user:OLkFK55IG6uHQ71odoMaf2D0S2foWjB8@dpg-d5bavb8gjchc73bsvoq0-a.oregon-postgres.render.com:5432/db_x0yq'
-    DATABASES['default'] = dj_database_url.config(
-        default=RENDER_DB_URL,
-        conn_max_age=600,
-        ssl_require=True
-    )
+#
 
+
+
+# Database
+# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default='postgresql://db_x0yq_user:OLkFK55IG6uHQ71odoMaf2D0S2foWjB8@dpg-d5bavb8gjchc73bsvoq0-a.oregon-postgres.render.com/db_x0yq',
+        conn_max_age=600
+    )
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -159,9 +157,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'fr-fr'  # Changé en français
+LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/Paris'  # Changé en heure de Paris
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -174,58 +172,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Dossier pour les fichiers statiques additionnels
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
-# Configuration de WhiteNoise pour les fichiers statiques
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Media files (Images uploadées)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Default primary key field type (pour Django 3.2+)
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Logging configuration
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': False,
-        },
-    },
-}
-
-# Security settings pour production
-if not DEBUG:
-    # Force HTTPS
-    SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    
-    # Cookies sécurité
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    
-    # Headers sécurité
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
+MEDIA_URL='/media/'
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')
