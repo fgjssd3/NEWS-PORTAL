@@ -28,14 +28,23 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.65','192.168.1.90']
 # Ou pour accepter toutes les adresses (développement uniquement) :
 
+<<<<<<< HEAD
   # En production sur Render
+=======
+ # En production sur Render
+>>>>>>> 63f4244704c3ca8cfd306f13947c07865c746d04
 ALLOWED_HOSTS.extend([
         'news-portal-2-n8q7.onrender.com',
         '.onrender.com',  # Tous les sous-domaines Render
         'distinction-ptf.com',  # Votre domaine personnalisé (si vous en avez)
         'www.distinction-ptf.com',
+<<<<<<< HEAD
 
   ])
+=======
+])
+
+>>>>>>> 63f4244704c3ca8cfd306f13947c07865c746d04
 
 # settings.py
 
@@ -56,16 +65,23 @@ if DEBUG:
         'http://0.0.0.0:8000',
     ])
 
+<<<<<<< HEAD
 # === AJOUTEZ CES 4 LIGNES ===
 SESSION_SAVE_EVERY_REQUEST = True
 CACHE_MIDDLEWARE_SECONDS = 0
 DATABASES['default']['OPTIONS'] = {'timeout': 30, 'check_same_thread': False}    
 
+=======
+>>>>>>> 63f4244704c3ca8cfd306f13947c07865c746d04
 # Important pour les reverse proxies comme Render
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
+<<<<<<< HEAD
 CSRF_COOKIE_SECURE = True  
+=======
+CSRF_COOKIE_SECURE = True
+>>>>>>> 63f4244704c3ca8cfd306f13947c07865c746d04
  
 
 # Application definition

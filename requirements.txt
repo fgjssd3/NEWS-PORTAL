@@ -2,5 +2,3 @@
 Django==4.2.18  # Version LTS stable (recommandée pour production)
 # Django==5.0.4  # Version plus récente avec nouvelles fonctionnalités
 
-# ===== ESSENTIELS =====
-Pillow==10.2.0  # REQUIS pour ImageField et manipulation d'images
