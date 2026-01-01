@@ -1,0 +1,36 @@
+# Fichiers de base de données SQLite
+db.sqlite3
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+
+# Migrations (optionnel - si vous ne voulez pas les versionner)
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Fichiers de cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environnement virtuel
+venv/
+env/
+.venv/
+
+# Fichiers IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Fichiers de logs
+*.log
+
+# Fichiers sensibles
+.env
+.env.local
+.secrets/
