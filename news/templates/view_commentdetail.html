@@ -148,42 +148,77 @@
   <!-- JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    window.addEventListener('DOMContentLoaded', function(){
-      const form = document.getElementById('statusForm');
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-      // SweetAlert confirm on update
-      form?.addEventListener('submit', function(e){
-        e.preventDefault();
-        const formEl = this;
-
-        Swal.fire({
-          title: 'Confirm update?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, update',
-          cancelButtonText: 'Cancel',
-          reverseButtons: true
-        }).then((res)=>{
-          if(res.isConfirmed){
-            formEl.submit();
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Page loaded');
+  
+  const form = document.getElementById('statusForm');
+  
+  if (form) {
+    console.log('Form found');
+    
+    form.addEventListener('submit', function(event) {
+      console.log('Form submission intercepted');
+      
+      // Empêcher l'envoi normal
+      event.preventDefault();
+      
+      // Sauvegarder une référence au formulaire
+      const formElement = this;
+      
+      // Demander confirmation avec SweetAlert
+      Swal.fire({
+        title: 'Update Comment Status?',
+        text: 'Please confirm this action',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, update it',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#0ea5e9',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log('Confirmed, submitting form...');
+          
+          // CRITIQUE: Créer un nouveau formulaire invisible
+          const hiddenForm = document.createElement('form');
+          hiddenForm.method = 'POST';
+          hiddenForm.action = formElement.action || '';
+          
+          // Copier tous les champs
+          const csrfInput = formElement.querySelector('input[name="csrfmiddlewaretoken"]');
+          const statusSelect = formElement.querySelector('select[name="status"]');
+          
+          if (csrfInput) {
+            const csrfClone = csrfInput.cloneNode(true);
+            hiddenForm.appendChild(csrfClone);
           }
-        });
+          
+          if (statusSelect) {
+            const statusInput = document.createElement('input');
+            statusInput.type = 'hidden';
+            statusInput.name = 'status';
+            statusInput.value = statusSelect.value;
+            hiddenForm.appendChild(statusInput);
+          }
+          
+          // Ajouter au DOM et soumettre
+          document.body.appendChild(hiddenForm);
+          hiddenForm.submit();
+        } else {
+          console.log('Cancelled');
+        }
       });
-
-      // Optional: Django messages → toast, if you use messages in view
-      {% if messages %}
-        {% for message in messages %}
-          Swal.fire({
-            toast:true, position:'top-end',
-            icon:'{{ message.tags|default:"info" }}',
-            title:'{{ message|escapejs }}',
-            timer:1600, showConfirmButton:false, timerProgressBar:true
-          });
-        {% endfor %}
-      {% endif %}
     });
-  </script>
+  }
+  
+  // SUPPRIMEZ ou CORRIGEZ la partie messages
+  // NE PAS utiliser Swal.fire() directement dans Django template
+});
+</script>
 </body>
 </html>
 
