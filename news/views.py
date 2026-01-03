@@ -313,28 +313,24 @@ def approved_comment(request):
 
 
 
-def view_commentdetail(request,pid):
+def view_commentdetail(request, pid):
     if not request.user.is_authenticated:
         return redirect('login')
-    error=""
-    comment = Comment.objects.filter(id=pid)
-    if request.method=="POST":
-        comment1 = Comment.objects.get(id=pid)
-        s = request.POST['status']
-        comment1.status = s
+    
+    error = ""
+    comment_obj = Comment.objects.get(id=pid)
+    
+    if request.method == "POST":
+        s = request.POST.get('status', 'pending')
+        comment_obj.status = s
         try:
-            comment1.save()
-            error="no"
+            comment_obj.save()
+            error = "no"
+            messages.success(request, f"Comment status updated to {s}!")
+            return redirect('unapproved_comment')  # AJOUTEZ CETTE LIGNE
         except:
-            error="yes"
-    d = {'comment':comment,'error':error}
+            error = "yes"
+    
+    d = {'comment': [comment_obj], 'error': error}
     return render(request, 'view_commentdetail.html', d)
-
-def delete_comment(request,pid):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    comment = Comment.objects.get(id=pid)
-    comment.delete()
-    return redirect('unapproved_comment')
-
 

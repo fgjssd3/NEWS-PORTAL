@@ -4,13 +4,11 @@
 <!doctype html>
 <html lang="en">
 <head>
- 
   <meta charset="utf-8"/>
-
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
   <title>News Portal – View Comment Details</title>
- <link rel="icon" type="image/png" href="{% static 'images/logo2.png' %}">
+  <link rel="icon" type="image/png" href="{% static 'images/logo2.png' %}">
+  
   <!-- Bootstrap 5 + FA6 + SweetAlert2 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
@@ -21,13 +19,14 @@
     body{ background:#f8fafc; color:var(--ink); }
     .with-sidebar{ margin-left:260px; transition:margin-left .2s ease; }
     body.sidebar-collapsed .with-sidebar{ margin-left:76px; }
-
     .card-glass{ border:0; border-radius:1rem; background:#fff; box-shadow:0 12px 34px rgba(15,23,42,.12); }
     .table thead th{ font-weight:800; letter-spacing:.2px; color:var(--primary-2); border-bottom:2px solid #e2e8f0; }
     .table td{ vertical-align: middle; }
     .badge-approved{ background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; }
     .badge-pending{ background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
+    .badge-rejected{ background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
     .meta{ color:var(--muted); }
+    .comment-box{ background:#f8fafc; border-left:4px solid var(--primary); padding:1rem; border-radius:0.5rem; }
   </style>
 </head>
 <body>
@@ -44,68 +43,104 @@
           <i class="fa-regular fa-comment-dots me-2"></i> View Comment Details
         </h1>
         <a href="{% url 'unapproved_comment' %}" class="btn btn-sm btn-outline-primary">
-          <i class="fa-solid fa-inbox me-1"></i> Back to Pending
+          <i class="fa-solid fa-arrow-left me-1"></i> Back to Pending Comments
         </a>
       </div>
+
+      <!-- Messages d'alerte -->
+      {% if messages %}
+        <div class="mb-4">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
 
       <div class="card card-glass">
         <div class="card-body p-4 p-md-5">
 
           {% for i in comment %}
           <!-- Details table -->
-          <div class="table-responsive mb-3">
+          <div class="table-responsive mb-4">
             <table class="table align-middle">
               <tbody>
                 <tr>
-                  <th style="width:180px">Name</th>
-                  <td>{{ i.name }}</td>
-                  <th style="width:180px">Email</th>
-                  <td>{{ i.emailid }}</td>
-                </tr>
-                <tr>
-                  <th>Comment</th>
-                  <td>{{ i.commentmsg }}</td>
-                  <th>Post / News</th>
-                  <td><span class="badge bg-primary-subtle text-primary">{{ i.newspost.posttitle }}</span></td>
-                </tr>
-                <tr>
-                  <th>Comment Date</th>
-                  <td class="meta">{{ i.cdate }}</td>
-                  <th>News Post Date</th>
-                  <td class="meta">{{ i.newspost.postdate }}</td>
-                </tr>
-                <tr>
-                  <th>Comment Final Status</th>
+                  <th style="width:180px">Comment ID</th>
+                  <td><strong>#{{ i.id }}</strong></td>
+                  <th style="width:180px">Status</th>
                   <td>
                     {% if i.status == "Accept" %}
                       <span class="badge badge-approved"><i class="fa-solid fa-check me-1"></i> Approved</span>
                     {% elif i.status == "pending" %}
                       <span class="badge badge-pending"><i class="fa-regular fa-hourglass-half me-1"></i> Pending</span>
+                    {% elif i.status == "Reject" %}
+                      <span class="badge badge-rejected"><i class="fa-solid fa-ban me-1"></i> Rejected</span>
                     {% else %}
                       <span class="badge bg-light text-dark">{{ i.status }}</span>
                     {% endif %}
                   </td>
-                  <th>Admin Remark</th>
-                  <td>
-                    {% if i.status == "pending" %}
-                      <span class="meta">Not Updated Yet</span>
-                    {% else %}
-                      {{ i.status }}
-                    {% endif %}
-                  </td>
+                </tr>
+                <tr>
+                  <th>Commenter Name</th>
+                  <td>{{ i.name }}</td>
+                  <th>Email Address</th>
+                  <td>{{ i.emailid }}</td>
+                </tr>
+                <tr>
+                  <th>Comment Date</th>
+                  <td class="meta">{{ i.cdate|date:"d M Y, H:i" }}</td>
+                  <th>News Post</th>
+                  <td><span class="badge bg-primary-subtle text-primary">{{ i.newspost.posttitle }}</span></td>
+                </tr>
+                <tr>
+                  <th>News Post Date</th>
+                  <td class="meta">{{ i.newspost.postdate|date:"d M Y" }}</td>
+                  <th>Post Category</th>
+                  <td><span class="badge bg-info-subtle text-info">{{ i.newspost.category.name }}</span></td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          {% if i.status == "pending" %}
-            <div class="d-flex justify-content-center">
+          <!-- Comment Message Box -->
+          <div class="mb-4">
+            <h6 class="fw-semibold mb-2">Comment Message:</h6>
+            <div class="comment-box">
+              <p class="mb-0">{{ i.commentmsg|linebreaks }}</p>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-flex justify-content-center gap-3 pt-3">
+            {% if i.status == "pending" %}
               <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#actionModal">
                 <i class="fa-solid fa-gavel me-1"></i> Take Action
               </button>
-            </div>
-          {% endif %}
+            {% else %}
+              <div class="alert alert-success w-100 text-center">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                This comment is already <strong>{{ i.status }}</strong>. 
+                <a href="{% url 'unapproved_comment' %}" class="alert-link ms-2">View other pending comments</a>
+              </div>
+            {% endif %}
+            
+            <a href="{% url 'delete_comment' i.id %}" class="btn btn-outline-danger" onclick="return confirmDelete()">
+              <i class="fa-solid fa-trash me-1"></i> Delete
+            </a>
+          </div>
 
+          {% empty %}
+          <div class="text-center py-5">
+            <i class="fa-regular fa-comment-slash fa-3x text-muted mb-3"></i>
+            <h5>Comment Not Found</h5>
+            <p class="text-muted">The comment you're looking for doesn't exist or has been deleted.</p>
+            <a href="{% url 'unapproved_comment' %}" class="btn btn-primary">
+              <i class="fa-solid fa-inbox me-1"></i> Back to Pending Comments
+            </a>
+          </div>
           {% endfor %}
 
         </div>
@@ -117,25 +152,36 @@
           <form method="post" id="statusForm" class="modal-content">
             {% csrf_token %}
             <div class="modal-header">
-              <h5 class="modal-title" id="actionLabel">Take Action</h5>
+              <h5 class="modal-title" id="actionLabel">Take Action on Comment</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <div class="modal-body">
               <div class="mb-3">
-                <label class="form-label fw-semibold">Status</label>
+                <label class="form-label fw-semibold">Select Status</label>
                 <select name="status" class="form-select" required>
-                  <option value="Accept" selected>Approved</option>
-                  <option value="pending">Pending</option>
+                  <option value="Accept" selected>✅ Approve Comment</option>
+                  <option value="Reject">❌ Reject Comment</option>
+                  <option value="pending">⏳ Keep as Pending</option>
                 </select>
-                <div class="form-text">You can approve or keep it pending.</div>
+                <div class="form-text mt-2">
+                  <i class="fa-solid fa-info-circle me-1"></i>
+                  Approved comments will appear on the news post. Rejected comments will be hidden.
+                </div>
+              </div>
+              
+              <div class="alert alert-info">
+                <small>
+                  <i class="fa-solid fa-lightbulb me-1"></i>
+                  <strong>Note:</strong> After updating, you'll be redirected to the pending comments list.
+                </small>
               </div>
             </div>
 
             <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
               <button type="submit" name="submit" class="btn btn-primary">
-                <i class="fa-solid fa-floppy-disk me-1"></i> Update
+                <i class="fa-solid fa-floppy-disk me-1"></i> Update Status
               </button>
             </div>
           </form>
@@ -150,35 +196,73 @@
 
   <script>
     window.addEventListener('DOMContentLoaded', function(){
-      const form = document.getElementById('statusForm');
-
       // SweetAlert confirm on update
+      const form = document.getElementById('statusForm');
       form?.addEventListener('submit', function(e){
         e.preventDefault();
-        const formEl = this;
-
+        
         Swal.fire({
-          title: 'Confirm update?',
+          title: 'Confirm Status Update?',
+          html: 'Are you sure you want to update this comment status?',
           icon: 'question',
           showCancelButton: true,
-          confirmButtonText: 'Yes, update',
+          confirmButtonText: 'Yes, update it',
           cancelButtonText: 'Cancel',
+          confirmButtonColor: '#0ea5e9',
           reverseButtons: true
-        }).then((res)=>{
+        }).then((res) => {
           if(res.isConfirmed){
-            formEl.submit();
+            // Show loading
+            Swal.fire({
+              title: 'Updating...',
+              text: 'Please wait',
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+            
+            // Submit form
+            form.submit();
           }
         });
       });
 
-      // Optional: Django messages → toast, if you use messages in view
+      // Delete confirmation
+      window.confirmDelete = function() {
+        return Swal.fire({
+          title: 'Delete Comment?',
+          text: "This action cannot be undone!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it',
+          cancelButtonText: 'Cancel',
+          confirmButtonColor: '#dc2626',
+          reverseButtons: true
+        }).then((result) => {
+          return result.isConfirmed;
+        });
+      };
+
+      // Django messages → SweetAlert
       {% if messages %}
         {% for message in messages %}
+          const iconMap = {
+            'success': 'success',
+            'error': 'error',
+            'warning': 'warning',
+            'info': 'info',
+            'debug': 'question'
+          };
+          
           Swal.fire({
-            toast:true, position:'top-end',
-            icon:'{{ message.tags|default:"info" }}',
-            title:'{{ message|escapejs }}',
-            timer:1600, showConfirmButton:false, timerProgressBar:true
+            toast: true,
+            position: 'top-end',
+            icon: iconMap['{{ message.tags }}'] || 'info',
+            title: '{{ message|escapejs }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
           });
         {% endfor %}
       {% endif %}
