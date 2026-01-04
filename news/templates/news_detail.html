@@ -2,30 +2,57 @@
 {% block body %}
 
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
-
-  <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
-<meta property="og:title" content="Titre de votre application">
-<meta property="og:description" content="Description courte et attractive de votre service.">
-<meta property="og:image" content="votre-site.com">
-<meta property="og:url" content="https://distinctionptf-icgu.onrender.com">
-<meta property="og:type" content="website">
-
-<!-- Twitter Cards (X/Twitter) -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Titre de votre application">
-<meta name="twitter:description" content="Description pour X.">
-<meta name="twitter:image" content="https://distinctionptf-icgu.onrender.com">
-
-
-
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
- <link rel="icon" type="image/png" href="{% static 'images/logo2.png' %}">
- 
+  <link rel="icon" type="image/png" href="{% static 'images/logo2.png' %}">
+  
   <title>News Portal | {{ newspost.posttitle }}</title>
-
+  
+  <!-- ==================== BALISES POUR LE PARTAGE SOCIAL ==================== -->
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp, etc.) -->
+  <meta property="og:title" content="{{ newspost.posttitle }}">
+  <meta property="og:description" content="{{ newspost.postdetail|striptags|truncatechars:200 }}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="News Portal">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ newspost.posttitle }}">
+  <meta name="twitter:description" content="{{ newspost.postdetail|striptags|truncatechars:200 }}">
+  
+  <!-- Image pour le partage social -->
+  {% if newspost.postimage %}
+    <!-- URL absolue de l'image principale -->
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ newspost.postimage.url }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
+    <!-- Twitter -->
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ newspost.postimage.url }}">
+  {% else %}
+    <!-- Image par défaut si l'article n'en a pas -->
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo2.png' %}">
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo2.png' %}">
+  {% endif %}
+  
+  <!-- Auteur et autres métadonnées -->
+  {% if newspost.authorname %}
+    <meta property="article:author" content="{{ newspost.authorname }}">
+  {% endif %}
+  {% if newspost.postdate %}
+    <meta property="article:published_time" content="{{ newspost.postdate|date:'c' }}">
+  {% endif %}
+  {% if newspost.category %}
+    <meta property="article:section" content="{{ newspost.category.categoryname }}">
+  {% endif %}
+  
+  <!-- Description pour SEO -->
+  <meta name="description" content="{{ newspost.postdetail|striptags|truncatechars:160 }}">
+  
+  <!-- ==================== FEUILLES DE STYLE ET SCRIPTS ==================== -->
   <!-- Bootstrap 5 + FA6 + SweetAlert2 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
@@ -81,45 +108,47 @@
               {{ newspost.postdetail|safe }}
             </div>
 
-           <!-- Share (optional, simple links) -->
-<div class="d-flex align-items-center gap-3 mt-4 share">
-  <span class="meta">Partage:</span>
-  
-  <!-- Twitter -->
-  <a href="https://twitter.com/intent/tweet?text={{ newspost.posttitle|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" 
-     target="_blank" rel="noopener nofollow" 
-     class="text-dark" title="Partager sur Twitter">
-    <i class="fa-brands fa-x-twitter"></i>
-  </a>
-  
-  <!-- Facebook -->
-  <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" 
-     target="_blank" rel="noopener nofollow" 
-     class="text-primary" title="Partager sur Facebook">
-    <i class="fa-brands fa-facebook"></i>
-  </a>
-  
-  <!-- WhatsApp -->
-  <a href="whatsapp://send?text={{ newspost.posttitle|urlencode }}%20-%20{{ request.build_absolute_uri|urlencode }}" 
-     target="_blank" rel="noopener nofollow" 
-     class="text-success" title="Partager sur WhatsApp"
-     data-action="share/whatsapp/share">
-    <i class="fa-brands fa-whatsapp"></i>
-  </a>
-  
-  <!-- Email -->
-  <a href="mailto:?subject={{ newspost.posttitle|urlencode }}&body=Découvrez cet article:%0D%0A{{ newspost.posttitle|urlencode }}%0D%0A{{ request.build_absolute_uri|urlencode }}" 
-     class="text-secondary" title="Partager par email">
-    <i class="fa-solid fa-envelope"></i>
-  </a>
-  
-  <!-- LinkedIn (optionnel) -->
-  <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}" 
-     target="_blank" rel="noopener nofollow" 
-     class="text-info" title="Partager sur LinkedIn">
-    <i class="fa-brands fa-linkedin"></i>
-  </a>
-</div>
+            <!-- Share -->
+            <div class="d-flex align-items-center gap-3 mt-4 share">
+              <span class="meta">Partage:</span>
+              
+              <!-- Twitter -->
+              <a href="https://twitter.com/intent/tweet?text={{ newspost.posttitle|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" 
+                 target="_blank" rel="noopener nofollow" 
+                 class="text-dark" title="Partager sur Twitter">
+                <i class="fa-brands fa-x-twitter"></i>
+              </a>
+              
+              <!-- Facebook -->
+              <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" 
+                 target="_blank" rel="noopener nofollow" 
+                 class="text-primary" title="Partager sur Facebook">
+                <i class="fa-brands fa-facebook"></i>
+              </a>
+              
+              <!-- WhatsApp -->
+              <a href="whatsapp://send?text={{ newspost.posttitle|urlencode }}%20-%20{{ request.build_absolute_uri|urlencode }}" 
+                 target="_blank" rel="noopener nofollow" 
+                 class="text-success" title="Partager sur WhatsApp"
+                 data-action="share/whatsapp/share">
+                <i class="fa-brands fa-whatsapp"></i>
+              </a>
+              
+              <!-- Email -->
+              <a href="mailto:?subject={{ newspost.posttitle|urlencode }}&body=Découvrez cet article:%0D%0A{{ newspost.posttitle|urlencode }}%0D%0A{{ request.build_absolute_uri|urlencode }}" 
+                 class="text-secondary" title="Partager par email">
+                <i class="fa-solid fa-envelope"></i>
+              </a>
+              
+              <!-- LinkedIn -->
+              <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}" 
+                 target="_blank" rel="noopener nofollow" 
+                 class="text-info" title="Partager sur LinkedIn">
+                <i class="fa-brands fa-linkedin"></i>
+              </a>
+            </div>
+          </div>
+        </div>
 
         <!-- Comments -->
         <div class="card comment-card mt-4">
@@ -193,7 +222,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // light client-side validation + double submit guard
     window.addEventListener('DOMContentLoaded', function(){
       const form = document.getElementById('commentForm');
       if(!form) return;
@@ -205,34 +233,32 @@
 
         if(name.length < 2){
           e.preventDefault();
-          Swal.fire({icon:'error', title:'Enter your name', text:'Please provide at least 2 characters.'});
+          Swal.fire({icon:'error', title:'Nom requis', text:'Veuillez fournir au moins 2 caractères.'});
           return;
         }
         if(!email){
           e.preventDefault();
-          Swal.fire({icon:'error', title:'Enter a valid email'});
+          Swal.fire({icon:'error', title:'Email requis'});
           return;
         }
         if(msg.length < 3){
           e.preventDefault();
-          Swal.fire({icon:'error', title:'Comment too short'});
+          Swal.fire({icon:'error', title:'Commentaire trop court'});
           return;
         }
 
-        // prevent double submit
         form.querySelector('button[type="submit"]')?.setAttribute('disabled','disabled');
       });
 
-      // server feedback via `error` context variable
       {% if error == "no" %}
         Swal.fire({
           icon:'success',
-          title:'Comment submitted',
-          text:'Your comment will appear after admin review.',
+          title:'Commentaire soumis',
+          text:'Votre commentaire apparaîtra après modération.',
           timer:1700, showConfirmButton:false, timerProgressBar:true
         });
       {% elif error == "yes" %}
-        Swal.fire({ icon:'error', title:'Something went wrong', text:'Please try again.' });
+        Swal.fire({ icon:'error', title:'Erreur', text:'Veuillez réessayer.' });
       {% endif %}
     });
   </script>
